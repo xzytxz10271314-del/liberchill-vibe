@@ -11,6 +11,8 @@ let viewportHeight = window.innerHeight;
 let lastFrameTime = performance.now();
 let windPhase = Math.random() * Math.PI * 2;
 let animationFrameId = 0;
+let sceneParallaxX = 0;
+let sceneParallaxY = 0;
 
 function random(min, max) {
   return Math.random() * (max - min) + min;
@@ -81,9 +83,11 @@ class Petal {
     const red = 255;
     const green = clamp(210 + this.tint, 160, 235);
     const blue = clamp(226 + this.tint, 180, 242);
+    const depthParallaxX = sceneParallaxX * (12 + this.depth * 44);
+    const depthParallaxY = sceneParallaxY * (8 + this.depth * 22);
 
     ctx.save();
-    ctx.translate(this.x, this.y);
+    ctx.translate(this.x + depthParallaxX, this.y + depthParallaxY);
     ctx.rotate(this.rotation);
     ctx.scale(stretch, this.tilt);
     ctx.filter = this.blur > 0 ? `blur(${this.blur.toFixed(2)}px)` : "none";
@@ -170,6 +174,16 @@ function resetLogoTransform() {
   root.style.setProperty("--ring-shift-y", "0px");
 }
 
+function resetScenePerspective() {
+  root.style.setProperty("--scene-rotate-x", "0deg");
+  root.style.setProperty("--scene-rotate-y", "0deg");
+  root.style.setProperty("--scene-shift-x", "0px");
+  root.style.setProperty("--scene-shift-y", "0px");
+  root.style.setProperty("--scene-scale", "1");
+  sceneParallaxX = 0;
+  sceneParallaxY = 0;
+}
+
 function updateLogoTransform(event) {
   const bounds = logoStage.getBoundingClientRect();
   const offsetX = (event.clientX - bounds.left) / bounds.width;
@@ -195,14 +209,23 @@ function updateLogoTransform(event) {
 }
 
 function updateAmbientGlow(event) {
-  if (event.pointerType === "touch") {
+  if (event.pointerType === "touch" || prefersReducedMotion.matches) {
     return;
   }
 
   const viewportX = clamp(event.clientX / viewportWidth, 0, 1);
   const viewportY = clamp(event.clientY / viewportHeight, 0, 1);
+  const centeredX = viewportX * 2 - 1;
+  const centeredY = viewportY * 2 - 1;
   root.style.setProperty("--cursor-x", `${(viewportX * 100).toFixed(2)}%`);
   root.style.setProperty("--cursor-y", `${(viewportY * 100).toFixed(2)}%`);
+  root.style.setProperty("--scene-rotate-x", `${(-centeredY * 7.5).toFixed(2)}deg`);
+  root.style.setProperty("--scene-rotate-y", `${(centeredX * 10.5).toFixed(2)}deg`);
+  root.style.setProperty("--scene-shift-x", `${(centeredX * 16).toFixed(2)}px`);
+  root.style.setProperty("--scene-shift-y", `${(centeredY * 10).toFixed(2)}px`);
+  root.style.setProperty("--scene-scale", "1.018");
+  sceneParallaxX = centeredX;
+  sceneParallaxY = centeredY;
 }
 
 function restartAnimation() {
@@ -214,6 +237,7 @@ function restartAnimation() {
 resizeCanvas();
 populatePetals();
 resetLogoTransform();
+resetScenePerspective();
 root.style.setProperty("--cursor-x", "50%");
 root.style.setProperty("--cursor-y", "24%");
 
@@ -221,6 +245,10 @@ logoStage.addEventListener("pointermove", updateLogoTransform);
 logoStage.addEventListener("pointerenter", updateLogoTransform);
 logoStage.addEventListener("pointerleave", resetLogoTransform);
 window.addEventListener("pointermove", updateAmbientGlow, { passive: true });
+window.addEventListener("blur", () => {
+  resetLogoTransform();
+  resetScenePerspective();
+});
 
 window.addEventListener("resize", () => {
   resizeCanvas();

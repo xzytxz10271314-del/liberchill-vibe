@@ -11,28 +11,48 @@
     <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
-    <canvas class="petal-canvas" id="petalCanvas" aria-hidden="true"></canvas>
-
-    <div class="background-glow background-glow-left" aria-hidden="true"></div>
-    <div class="background-glow background-glow-right" aria-hidden="true"></div>
-    <div class="background-blush" aria-hidden="true"></div>
-
-    <main class="logo-spot">
-      <div class="logo-stage" id="logoStage">
-        <div class="logo-aura" aria-hidden="true"></div>
-        <div class="logo-float">
-          <div class="logo-shadow" aria-hidden="true"></div>
-          <div class="logo-shell" id="logoShell">
-            <img
-              class="logo-image"
-              src="assets/liberchill-logo.png"
-              alt="Liberchill logo"
-            />
-          </div>
+    <div class="scene-shell" id="sceneShell">
+      <div class="scene-world" id="sceneWorld">
+        <div class="scene-layer scene-layer-atmosphere" aria-hidden="true">
+          <div class="scene-sheen"></div>
+          <div class="scene-texture"></div>
+          <div class="background-glow background-glow-left"></div>
+          <div class="background-glow background-glow-right"></div>
+          <div class="background-blush"></div>
         </div>
-        <div class="logo-ring" aria-hidden="true"></div>
+
+        <div class="scene-layer scene-layer-depth" aria-hidden="true">
+          <div class="scene-backdrop"></div>
+          <div class="scene-floor"></div>
+        </div>
+
+        <div class="scene-layer scene-layer-petals" aria-hidden="true">
+          <canvas class="petal-canvas" id="petalCanvas"></canvas>
+        </div>
+
+        <div class="scene-layer scene-layer-foreground" aria-hidden="true">
+          <div class="foreground-haze foreground-haze-left"></div>
+          <div class="foreground-haze foreground-haze-right"></div>
+        </div>
+
+        <main class="logo-spot">
+          <div class="logo-stage" id="logoStage">
+            <div class="logo-aura" aria-hidden="true"></div>
+            <div class="logo-float">
+              <div class="logo-shadow" aria-hidden="true"></div>
+              <div class="logo-shell" id="logoShell">
+                <img
+                  class="logo-image"
+                  src="assets/liberchill-logo.png"
+                  alt="Liberchill logo"
+                />
+              </div>
+            </div>
+            <div class="logo-ring" aria-hidden="true"></div>
+          </div>
+        </main>
       </div>
-    </main>
+    </div>
 
     <script src="js/main.js"></script>
   </body>
